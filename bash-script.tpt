@@ -2,10 +2,27 @@
 set -e
 IFS=$' \t\n'
 
+##### INFO #####
+
+#-
+#-  Version:		${SKRIPT_NAME} 0.0.0.0
+#-  
+#-  Author:		Petr Vecko
+#-  
+#-  Copyright:		Copyright (c) Petr Vecko 2018
+#-  
+#-  License:		GNU General Public License
+#-
+
+info() { grep '^#-' "$0" | cut -c4- ; exit 0 ; }
+expr "$*" : ".*--info" > /dev/null && info
+
+##### HELP #####
+
 #/
 #/ Synopsis:
 #/ ------------
-#/ bash-template.tpt -[a] [--b <file>] args...
+#/ bash-template.tpt -[a] [-b <file>] args...
 #/ 
 #/ Description:
 #/ ------------
@@ -27,48 +44,48 @@ IFS=$' \t\n'
 usage() { grep '^#/' "$0" | cut -c4- ; exit 0 ; }
 expr "$*" : ".*--help" > /dev/null && usage
 
+##### ERROR LOG #####
+
 readonly LOG_FILE="/tmp/$(basename "$0").log"
 info() 		{ echo "[INFO]	 $0	$1" | tee -a "$LOG_FILE" >&2 ; }
 warning() 	{ echo "[WARN]   $0	$1" | tee -a "$LOG_FILE" >&2 ; }
 error()		{ echo "[ERROR]  $0	$1" | tee -a "$LOG_FILE" >&2 ; }
 fatal()		{ echo "[FATAL]  $0	$1" | tee -a "$LOG_FILE" >&2 ; exit 1 ; }
 
-##### PARSE PARAMETERS #####
+##### INTERPRET PARAMETERS #####
 
-declare -i index
-index=1
+POSITIONAL=()
 
-declare -a options
+while [[ $# -gt 0 ]]
+do
+	key="$1"  
 
-while [[ "$index" -le "$#" ]]
-do	
-	if [[ ${!index} == -* ]];then
-		option=${!index}
-			if [[ ${#option} -gt 2 ]];then
-				ops=($option)
-				ops_l=$((${#option}-1))
-				
-				i=1
-				while [[ i -le ops_l ]];
-				do
-					options+=(${ops:$i:1})
-					((i++))
-				done				
-				
-				echo "${options[@]}"
-			fi
-		
-		((index++))		
-
-		opt_par=${@:$index:1}
-		echo "$option $opt_par"
-	else
-		echo "${!index}"
-	fi
-
-	index+=1
+	case $key in
+		-a|--arg_a)
+			ARG_A="$2"
+			shift 2
+			;;
+		--default)
+			DEFAULT=YES
+			shift
+			;;
+		*)    # unknown option     
+			POSITIONAL+=("$1") # save it in an array for later
+			shift
+			;;
+	esac 
 done
+
+echo "${POSITIONAL[@]}"
+
+set -- "${POSITIONAL[@]}" # restore positional parameters  
+
+echo ARG_A = "${ARG_A}"
+echo DEFAULT = "${DEFAULT}"
 
 ##### SCRIPT FUNCTIONS #####
 
+
+
 ##### MAIN SCRIPT #####
+
