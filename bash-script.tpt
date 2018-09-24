@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+set -e
+IFS=$' \t\n'
+
+#/
+#/ Synopsis:
+#/ ------------
+#/ bash-template.tpt -[a] [--b <file>] args...
+#/ 
+#/ Description:
+#/ ------------
+#/ This is a script that will do
+#/ something and something else until
+#/ you dont want to do something anymore.
+#/
+#/ Options:
+#/ ------------
+#/ -a|--aoption		Do stuff a
+#/ -b|--boption		Do stuff b 
+#/ -h|--help		Display this help message
+#/
+#/ Examples:
+#/ ------------
+#/ bash-template.tpt -a -b ~/file.txt		
+#/
+
+usage() { grep '^#/' "$0" | cut -c4- ; exit 0 ; }
+expr "$*" : ".*--help" > /dev/null && usage
+
+readonly LOG_FILE="/tmp/$(basename "$0").log"
+info() 		{ echo "[INFO]	 $0	$1" | tee -a "$LOG_FILE" >&2 ; }
+warning() 	{ echo "[WARN]   $0	$1" | tee -a "$LOG_FILE" >&2 ; }
+error()		{ echo "[ERROR]  $0	$1" | tee -a "$LOG_FILE" >&2 ; }
+fatal()		{ echo "[FATAL]  $0	$1" | tee -a "$LOG_FILE" >&2 ; exit 1 ; }
+
+# PARSE PARAMETERS #
+echo "Number of parameters: $#"
+
+declare -i index
+index=1
+
+declare -a options
+
+while [[ "$index" -le "$#" ]]
+do	
+	if [[ ${!index} == -* ]];then
+		option=${!index}
+			if [[ ${#option} -gt 2 ]];then
+				ops=($option)
+				ops_l=$((${#option}-1))
+				
+				i=1
+				while [[ i -le ops_l ]];
+				do
+					options+=(${ops:$i:1})
+					((i++))
+				done				
+				
+				echo "${options[@]}"
+			fi
+		
+		((index++))		
+
+		opt_par=${@:$index:1}
+		echo "$option $opt_par"
+	else
+		echo "${!index}"
+	fi
+
+	index+=1
+done
+
+##### SCRIPT FUNCTIONS #####
+
+##### MAIN SCRIPT #####
+
+echo "start script"
+
+# if [ -n "$a" ]; then echo "$a"; fi 
+
+# if [ -n "$b" ]; then echo "$b"; fi
+
+info "info 1"
+
+warning "warning 1"
+
+error "error 1"
+
+fatal "fatal 1"
+
+echo "end script"
