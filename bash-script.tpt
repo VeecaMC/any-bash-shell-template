@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
-IFS=$' \t\n'
+IFS=$' \t\n' 
 
 ##### INFO #####
 
 #-
-#-  Version:		${SKRIPT_NAME} 0.0.0.0
+#-  Version:		<fill_script_name> 0.0.0.0
 #-  
 #-  Author:		Petr Vecko
 #-  
@@ -14,35 +14,39 @@ IFS=$' \t\n'
 #-  License:		GNU General Public License
 #-
 
-info() { grep '^#-' "$0" | cut -c4- ; exit 0 ; }
+info() { grep '^#-' "$0" | cut -c4- ; }
 expr "$*" : ".*--info" > /dev/null && info
+
+info
 
 ##### HELP #####
 
 #/
-#/ Synopsis:
-#/ ------------
-#/ bash-template.tpt -[a] [-b <file>] args...
+#/  Synopsis:
+#/  ------------
+#/  bash-template.tpt -[a] [--default <file>] args...
 #/ 
-#/ Description:
-#/ ------------
-#/ This is a script that will do
-#/ something and something else until
-#/ you dont want to do something anymore.
+#/  Description:
+#/  ------------
+#/  This is a script that will do
+#/  something and something else until
+#/  you dont want to do something anymore.
 #/
-#/ Options:
-#/ ------------
-#/ -a|--aoption		Do stuff a
-#/ -b|--boption		Do stuff b 
-#/ -h|--help		Display this help message
-#/
-#/ Examples:
-#/ ------------
-#/ bash-template.tpt -a -b ~/file.txt		
+#/  Options:
+#/  ------------
+#/  -a|--aoption		Do stuff a
+#/    |--default		Default setup 
+#/  -h|--help		Display this help message
+#/ 
+#/  Examples:
+#/  ------------
+#/  ./bash-template.tpt -a <var> --default
 #/
 
-usage() { grep '^#/' "$0" | cut -c4- ; exit 0 ; }
+usage() { grep '^#/' "$0" | cut -c4- ; }
 expr "$*" : ".*--help" > /dev/null && usage
+
+usage
 
 ##### ERROR LOG #####
 
@@ -61,8 +65,8 @@ do
 	key="$1"  
 
 	case $key in
-		-a|--arg_a)
-			ARG_A="$2"
+		-a|--a_option)
+			A_OPTION="$2"
 			shift 2
 			;;
 		--default)
@@ -80,12 +84,21 @@ echo "${POSITIONAL[@]}"
 
 set -- "${POSITIONAL[@]}" # restore positional parameters  
 
-echo ARG_A = "${ARG_A}"
+echo A_OPTION = "${A_OPTION}"
 echo DEFAULT = "${DEFAULT}"
 
 ##### SCRIPT FUNCTIONS #####
 
 
 
+##### START UP #####
+
+
+
 ##### MAIN SCRIPT #####
+
+
+
+##### CLEAN UP #####
+
 
