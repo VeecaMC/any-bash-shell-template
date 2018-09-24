@@ -17,8 +17,6 @@ IFS=$' \t\n'
 info() { grep '^#-' "$0" | cut -c4- ; }
 expr "$*" : ".*--info" > /dev/null && info
 
-info
-
 ##### HELP #####
 
 #/
@@ -45,8 +43,6 @@ info
 
 usage() { grep '^#/' "$0" | cut -c4- ; }
 expr "$*" : ".*--help" > /dev/null && usage
-
-usage
 
 ##### ERROR LOG #####
 
