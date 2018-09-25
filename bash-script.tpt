@@ -1,6 +1,31 @@
 #!/usr/bin/env bash
-set -e
-IFS=$' \t\n' 
+xIFS=$' \t\n'
+
+#  -B			# enable brace expansion
+#  +B			# disable brace expansion
+#  -C			# Prevent overwriting of files by redirection (may be overridden by >|)
+#  -D			# List double-quoted strings prefixed by $, but do not execute commands in script
+#  -a			# Export all defined variables
+#  -b			# Notify when jobs running in background terminate
+#  -c ...		# Read commands from ...
+#  checkjobs		# Informs user of any open jobs upon shell exit 
+#  -e			# Abort script at first error
+#  -f			# Filename expansion (globbing) disabled 
+#  globstar		# Enables the ** globbing operator. Usage: shopt -s globstar
+#  -i			# Script runs in interactive mode 
+#  -n			# Read commands in script, but do not execute them 
+#  -o Option-Name	# Invoke option 
+#  -o posix		# Enable POSIX standart 
+#  -o pipefail		# Pipeline returns the exit status of the last failed command
+#  -p			# Script runs as suid
+#  -r			# Script runs in restricted mode
+#  -s			# Read commands from stdin
+#  -t			# Exit after first command 
+#  -u			# Abort script at first unassigned variable
+#  -v			# Print each command to stdout before executing it
+#  -x			# Similar to -v, but expands commands 
+#  -			# End of options flag - All other arguments are positional parameters
+#  --			# Unset positional parameters - if arguments given, positional parameters set to arguments
 
 ##### INFO #####
 
@@ -14,15 +39,16 @@ IFS=$' \t\n'
 #-  License:		GNU General Public License
 #-
 
-info() { grep '^#-' "$0" | cut -c4- ; }
+info() { grep '^#-' "$0" | cut -c4- ; exit 0; }
 expr "$*" : ".*--info" > /dev/null && info
+expr "$*" : "-i" > /dev/null && info
 
 ##### HELP #####
 
 #/
 #/  Synopsis:
 #/  ------------
-#/  bash-template.tpt -[a] [--default <file>] args...
+#/  bash-template.tpt -[bc] [-a OPT_A --default] <ARG_A> args...
 #/ 
 #/  Description:
 #/  ------------
@@ -32,17 +58,21 @@ expr "$*" : ".*--info" > /dev/null && info
 #/
 #/  Options:
 #/  ------------
-#/  -a|--aoption		Do stuff a
-#/    |--default		Default setup 
-#/  -h|--help		Display this help message
+#/  -a|--option_a		Do stuff A
+#/  -b|				Set flag B=true
+#/  -c|				Set flag C-true
+#/    |--default		Default 
+#/  -i|--info			Display script info
+#/  -h|--help			Display this help message
 #/ 
 #/  Examples:
 #/  ------------
-#/  ./bash-template.tpt -a <var> --default
+#/  ./bash-template.tpt -a aaa -bc --default arg_a arg_b
 #/
 
-usage() { grep '^#/' "$0" | cut -c4- ; }
+usage() { grep '^#/' "$0" | cut -c4- ; exit 0; }
 expr "$*" : ".*--help" > /dev/null && usage
+expr "$*" : "-h" > /dev/null && usage
 
 ##### ERROR LOG #####
 
@@ -54,34 +84,88 @@ fatal()		{ echo "[FATAL]  $0	$1" | tee -a "$LOG_FILE" >&2 ; exit 1 ; }
 
 ##### INTERPRET PARAMETERS #####
 
-POSITIONAL=()
+FLAG_B=false
+FLAG_C=false
 
+declare OPTION_A
+
+declare ARG_A
+
+DEFAULT=false
+
+POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
 	key="$1"  
 
 	case $key in
 		-a|--a_option)
-			A_OPTION="$2"
+			if [[ $2 != -* ]];then OPTION_A="$2";fi
 			shift 2
 			;;
 		--default)
-			DEFAULT=YES
+			unset DEFAULT
+			DEFAULT=true
 			shift
 			;;
 		*)    # unknown option     
-			POSITIONAL+=("$1") # save it in an array for later
+			POSITIONAL+=("$1") # save it in an array for later use
 			shift
 			;;
 	esac 
 done
 
-echo "${POSITIONAL[@]}"
+function interpret_flag () {
+	case $1 in
+		b) unset B; B=true;;
+		c) unset C; C=true;;
+		*) warning "Unknown flag $1";;
+	esac
+}
+
+function parse_flags () {
+	f="$1"
+	declare -a flags
+	for (( i=1 ; i <= ${#f} ; i++ )); do flags+=" ${f:i:1}"; done
+
+	for flag in $flags
+	do
+		interpret_flag $flag
+	done
+	unset flags
+} 
+
+if [[ ${#POSITIONAL} -gt 0 ]]; then 
+	
+	for arg in ${POSITIONAL[@]}
+	do
+		if [[ $arg == --* ]];then # FILTER OUT UNRECOGNIZED LONG-FORMAT OPTIONS
+			warning "Unknown parameter: $arg"
+		elif [[ $arg == -* ]];then # RECOGNIZE FLAG CHAIN
+			parse_flags $arg
+
+		# CUSTOM ARGS CHECKS GO HERE
+		elif [[ $arg == *_a ]];then
+			ARG_A="$arg"
+		else warning "Unknown argument: $arg"
+		fi
+	done
+fi
 
 set -- "${POSITIONAL[@]}" # restore positional parameters  
 
-echo A_OPTION = "${A_OPTION}"
-echo DEFAULT = "${DEFAULT}"
+function debug_info () {
+	echo 
+	echo DEFAULT = "${DEFAULT}"
+	echo
+	echo "Flags triggered: B=$B C=$C"
+	echo
+	echo "Options set: OPTION_A=${OPTION_A}"
+	echo
+	echo "Arguments collected ARG_A=${ARG_A}"
+}
+
+debug_info
 
 ##### SCRIPT FUNCTIONS #####
 
@@ -96,5 +180,3 @@ echo DEFAULT = "${DEFAULT}"
 
 
 ##### CLEAN UP #####
-
-
