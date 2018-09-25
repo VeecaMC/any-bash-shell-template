@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 xIFS=$' \t\n'
 
+FILE_EXT=".${0##*.}"
+FILE_NAME="$(basename $0 $FILE_EXT)"
+
 #  -B			# enable brace expansion
 #  +B			# disable brace expansion
 #  -C			# Prevent overwriting of files by redirection (may be overridden by >|)
@@ -77,10 +80,10 @@ expr "$*" : "-h" > /dev/null && usage
 ##### ERROR LOG #####
 
 readonly LOG_FILE="/tmp/$(basename "$0").log"
-info() 		{ echo "[INFO]	 $0	$1" | tee -a "$LOG_FILE" >&2 ; }
-warning() 	{ echo "[WARN]   $0	$1" | tee -a "$LOG_FILE" >&2 ; }
-error()		{ echo "[ERROR]  $0	$1" | tee -a "$LOG_FILE" >&2 ; }
-fatal()		{ echo "[FATAL]  $0	$1" | tee -a "$LOG_FILE" >&2 ; exit 1 ; }
+info() 		{ echo "[INFO]		$0	$1" | tee -a "$LOG_FILE" >&2 ; }
+warning() 	{ echo "[WARN]   	$0	$1" | tee -a "$LOG_FILE" >&2 ; }
+error()		{ echo "[ERROR]  	$0	$1" | tee -a "$LOG_FILE" >&2 ; }
+fatal()		{ echo "[FATAL]  	$0	$1" | tee -a "$LOG_FILE" >&2 ; exit 1 ; }
 
 ##### INTERPRET PARAMETERS #####
 
@@ -154,19 +157,6 @@ fi
 
 set -- "${POSITIONAL[@]}" # restore positional parameters  
 
-function debug_info () {
-	echo 
-	echo DEFAULT = "${DEFAULT}"
-	echo
-	echo "Flags triggered: B=$B C=$C"
-	echo
-	echo "Options set: OPTION_A=${OPTION_A}"
-	echo
-	echo "Arguments collected ARG_A=${ARG_A}"
-}
-
-debug_info
-
 ##### SCRIPT FUNCTIONS #####
 
 
@@ -180,3 +170,10 @@ debug_info
 
 
 ##### CLEAN UP #####
+
+function clean_up {
+	echo "Cleaning up..."
+	# Clean up stuff goes here
+}
+
+trap clean_up EXIT
