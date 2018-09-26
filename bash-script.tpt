@@ -7,43 +7,43 @@ readonly FOLDER="${FILE_PATH%/*}/"
 readonly FILE_EXT=".${0##*.}"
 readonly FILE_NAME="$(basename $0 $FILE_EXT)"
 
-#  -B                   # enable brace expansion
-#  +B                   # disable brace expansion
-#  -C                   # Prevent overwriting of files by redirection (may be overridden by >|)
-#  -D                   # List double-quoted strings prefixed by $, but do not execute commands in script
-#  -a                   # Export all defined variables
-#  -b                   # Notify when jobs running in background terminate
-#  -c ...               # Read commands from ...
-#  checkjobs            # Informs user of any open jobs upon shell exit
-#  -e                   # Abort script at first error
-#  -f                   # Filename expansion (globbing) disabled
-#  globstar             # Enables the ** globbing operator. Usage: shopt -s globstar
-#  -i                   # Script runs in interactive mode
-#  -n                   # Read commands in script, but do not execute them
-#  -o Option-Name       # Invoke option
-#  -o posix             # Enable POSIX standart
-#  -o pipefail          # Pipeline returns the exit status of the last failed command
-#  -p                   # Script runs as suid
-#  -r                   # Script runs in restricted mode
-#  -s                   # Read commands from stdin
-#  -t                   # Exit after first command
-#  -u                   # Abort script at first unassigned variable
-#  -v                   # Print each command to stdout before executing it
-#  -x                   # Similar to -v, but expands commands
+#  -B					# enable brace expansion
+#  +B					# disable brace expansion
+#  -C					# Prevent overwriting of files by redirection (may be overridden by >|)
+#  -D					# List double-quoted strings prefixed by $, but do not execute commands in script
+#  -a					# Export all defined variables
+#  -b					# Notify when jobs running in background terminate
+#  -c ...				# Read commands from ...
+#  checkjobs			# Informs user of any open jobs upon shell exit
+#  -e					# Abort script at first error
+#  -f					# Filename expansion (globbing) disabled
+#  globstar				# Enables the ** globbing operator. Usage: shopt -s globstar
+#  -i					# Script runs in interactive mode
+#  -n					# Read commands in script, but do not execute them
+#  -o Option-Name		# Invoke option
+#  -o posix				# Enable POSIX standart
+#  -o pipefail			# Pipeline returns the exit status of the last failed command
+#  -p					# Script runs as suid
+#  -r					# Script runs in restricted mode
+#  -s					# Read commands from stdin
+#  -t					# Exit after first command
+#  -u					# Abort script at first unassigned variable
+#  -v					# Print each command to stdout before executing it
+#  -x					# Similar to -v, but expands commands
 
 ##### INFO #####
 #-
-#-  Version:            <fill_script_name> 0.0.0.0
+#-  Version:			<fill_script_name> 0.0.0.0
 #-
-#-  Author:             Petr Vecko
+#-  Author:				Petr Vecko
 #-
-#-  Copyright:          Copyright (c) Petr Vecko 2018
+#-  Copyright:			Copyright (c) Petr Vecko 2018
 #-
-#-  License:            GNU General Public License
+#-  License:			GNU General Public License
 #-
-#-  Description:                This is a script that will do
-#-                                              something and something else
-#-                                              until there is nothing to do anymore.
+#-  Description:		This is a script that will do
+#-						something and something else
+#-						until there is nothing to do anymore.
 #-
 
 information () { grep '^#-' "$0" | cut -c4- ; exit 0; }
@@ -60,27 +60,27 @@ expr "$*" : "-i" > /dev/null && information
 #/
 #/  Flags:
 #/  ------------
-#/  -a									Set A=true
-#/  -b | +b								Set B=true and something | Set B=true and something else (otherwise do not use at all)
+#/  -a							Set A=true
+#/  -b | +b						Set B=true and something | Set B=true and something else (otherwise do not use at all)
 #/
 #/  Options:
 #/  ------------
-#/  -c|--coption <opt_arg>              Do stuff C with opt_arg and something
-#/  +c|++coption <opt_arg>              Do stuff C with opt_arg and something else
+#/  -c|--coption <opt_arg>		Do stuff C with opt_arg and something
+#/  +c|++coption <opt_arg>		Do stuff C with opt_arg and something else
 #/
 #/  Operands (must be provided in respective order to each other as follows):
 #/  ------------
-#/  <path/to/file>						Path to a file on which this script will take actions
-#/  [path/to/file]						If provided, path to an output file
+#/  <path/to/file>				Path to a file on which this script will take actions
+#/  [path/to/file]				If provided, path to an output file
 #/
 #/  Misc:
 #/  ------------
-#/  -i|--info							Display script info header and exit
-#/  -h|--help							Display this help message and exit
-#/    |--print-default					Prints the current script default settings
-#/    |--set-default					Saves the current script settings as default (any other parameter given will be saved as
-#/ 											default otherwise current default value for the option will be used)
-#/    |--restore-default				Restores script settings to initial values (overrides any other parameter given)
+#/  -i|--info					Display script info header and exit
+#/  -h|--help					Display this help message and exit
+#/    |--print-default			Prints the current script default settings
+#/    |--set-default			Saves the current script settings as default (any other parameter given will be saved as
+#/ 									default otherwise current default value for the option will be used)
+#/    |--restore-default		Restores script settings to initial values (overrides any other parameter given)
 #/
 #/  Examples:
 #/  ------------
@@ -119,145 +119,149 @@ DEFAULTS_START=$(($(grep -n "#->DEFAULTS" $0 | head -n 1 | cut -d: -f1)+6))
 DEFAULTS_END=$(($(grep -n "#->DEFAULTS" $0 | tail -n 1 | cut -d: -f1)-3))
 
 print_default () {
-        echo -e "Defaults:\n"
-		sed -n "$DEFAULTS_START,$DEFAULTS_END p" $0 && exit 0
+	echo -e "Defaults:\n"
+	sed -n "$DEFAULTS_START,$DEFAULTS_END p" $0 && exit 0
 }
 # print_default
 
 set_default () {
-        # Needs setup: Each time you add a parameter to the list, you need to register it accordingly here:
-        
-		echo "Setting up defaults..."
-		
-		# Flags (OR: other custom types that do not get unset by design)
-		sed -i "$DEFAULTS_START,$DEFAULTS_END s/FLAG_A=.*/FLAG_A=$FLAG_A/" $0
-        sed -i "$DEFAULTS_START,$DEFAULTS_END s/FLAG_B=.*/FLAG_B=$FLAG_B/" $0
-		
-        # Variables
-		if [[ -z "${OPTION_ARG_C}" ]];then 
-			sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPTION_ARG_C.*/declare OPTION_ARG_C/" $0;
-		else 
-			sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPTION_ARG_C.*/OPTION_ARG_C=\"$OPTION_ARG_C\"/" $0
-		fi
-		
-		if [[ -z "${OPERAND_D}" ]];then 
-			sed -i '$DEFAULTS_START,$DEFAULTS_END s/.*OPERAND_D.*/declare OPERAND_D/' $0;
-		else 
-			OPERAND_D="${OPERAND_D//\//\\/}"
-			sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPERAND_D.*/OPERAND_D=\"$OPERAND_D\"/" $0
-		fi
-		
-		echo "Default settings saved!"
+	# Needs setup: Each time you add a parameter to the list, you need to register it accordingly here:
+
+	# Flags (OR: other custom types that do not get unset by design)
+	sed -i "$DEFAULTS_START,$DEFAULTS_END s/FLAG_A=.*/FLAG_A=$FLAG_A/" $0
+	sed -i "$DEFAULTS_START,$DEFAULTS_END s/FLAG_B=.*/FLAG_B=$FLAG_B/" $0
+
+	# Variables
+	if [[ -z "${OPTION_ARG_C}" ]];then
+		sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPTION_ARG_C.*/declare OPTION_ARG_C/" $0;
+	else
+		sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPTION_ARG_C.*/OPTION_ARG_C=\"$OPTION_ARG_C\"/" $0
+	fi
+
+	if [[ -z "${OPERAND_D}" ]];then
+		sed -i '$DEFAULTS_START,$DEFAULTS_END s/.*OPERAND_D.*/declare OPERAND_D/' $0;
+	else
+		OPERAND_D="${OPERAND_D//\//\\/}"
+		sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPERAND_D.*/OPERAND_D=\"$OPERAND_D\"/" $0
+	fi
+
+	echo "Default settings saved!"
 }
 # set_default
 
 restore_default () {
-        # Needs setup: Each time you add a parameter to the list, you should set its intended default value here:
-        FLAG_A=false
-        FLAG_B=false
-		
-        unset OPTION_ARG_C
-		
-        unset OPERAND_D
+	# Needs setup: Each time you add a parameter to the list, you should set its intended default value here:
+	FLAG_A=false
+	FLAG_B=false
 
-        set_default
-		echo "Default setting restored!"
+	unset OPTION_ARG_C
+
+	unset OPERAND_D
+
+	set_default
+	echo "Default setting restored!"
 }
 # restore_default
 
 # Needs setup: Each time you add a new flag to the list, you should set its "-" value here:
 function interpret_-flag () {
-        case $1 in
-                a)  FLAG_A=true;;
-                b)  FLAG_B=true; set -e;;
-                -)
-                        # Do nothing
-                        ;;
-                *)  echo "Unknown - flag $1";;
-        esac
+	case $1 in
+		a)  FLAG_A=true;;
+		b)  FLAG_B=true; set -e;;
+		-)
+			# Do nothing
+			;;
+		*)  echo "Unknown - flag $1";;
+	esac
 }
 
 # Needs setup: Each time you add a new flag to the list, you should set its "+" value here (if needed):
 function interpret_+flag () {
-        case $1 in
-                b)  FLAG_B=true; set +e;;
-				+)
-                        # Do nothing
-                        ;;
-                *) echo "Unknown + flag $1";;
-        esac
+	case $1 in
+		b)  FLAG_B=true; set +e;;
+		+)
+			# Do nothing
+			;;
+		*) echo "Unknown + flag $1";;
+	esac
 }
 
 function deserialize_flags () {
-        f="$1"
-        declare -a flags
-        for (( i=1 ; i <= ${#f} ; i++ )); do flags+=" ${f:i:1}"; done
+	f="$1"
+	declare -a flags
+	for (( i=1 ; i <= ${#f} ; i++ )); do flags+=" ${f:i:1}"; done
 
-        for flag in $flags
-        do
-                if [[ $f == -* ]];then interpret_-flag $flag;else interpret_+flag $flag;fi
-        done
-        unset flags
+	for flag in $flags
+	do
+		if [[ $f == -* ]];then interpret_-flag $flag;else interpret_+flag $flag;fi
+	done
+	unset flags
 }
 
 # Needs setup: Each time you add a new option/operand to the parameters list, you should register it here:
 declare -a POSITIONAL
 while [[ $# -gt 0 ]]
 do
-        key="$1"
+	key="$1"
 
-        case "$key" in
-                -c|--coption)
-                        if [[ $2 != -* || $2 != +* ]];then OPTION_ARG_C=$2; else echo -e "No option argument for option \"$1\" was specified";fi
-                        set +x
-						shift 2
-						;;
-				+c|++coption)
-                        if [[ $2 != -* || $2 != +* ]];then OPTION_ARG_C=$2; else echo -e "No option argument for option \"$1\" was specified";fi
-						set -x
-                        shift 2
-                        ;;
-                --print-default)
-                        print_default
-                        shift
-                        ;;
-                --restore-default)
-                        RES_DEFAULT=true
-                        shift
-                        ;;
-                --set-default)
-                        SET_DEFAULT=true
-                        shift
-                        ;;
-                --*|++*)
-                        # FILTER OUT UNRECOGNIZED LONG-FORMAT OPTIONS
-                        echo "Unknown long format option: $key"
-                        shift
-                        ;;
-                -*|+*)
-                        # FILTER OUT FLAGS AND FLAG CHAINS
-                        deserialize_flags $key
-                        shift
-                        ;;
-                */*)
-                        # FILTER OUT CUSTOM OPERAND (any path-like value without further examining in this example)
-                        OPERAND_D=$1
-                        shift
-                        ;;
-                *)
-                        # FILTER OUT THE REST FOR POST EVALUATION
-                        POSITIONAL+=("$1")
-                        shift
-                        ;;
-        esac
+	case "$key" in
+		-c|--coption)
+			if [[ $2 != -* || $2 != +* ]];then 
+				OPTION_ARG_C=$2; 
+			else 
+				echo -e "No option argument for option \"$1\" was specified";fi
+			set +x
+			shift 2
+			;;
+		+c|++coption)
+			if [[ $2 != -* || $2 != +* ]];then
+				OPTION_ARG_C=$2;
+			else
+				echo -e "No option argument for option \"$1\" was specified";fi
+			set -x
+			shift 2
+			;;
+		--print-default)
+			print_default
+			shift
+			;;
+		--restore-default)
+			RES_DEFAULT=true
+			shift
+			;;
+		--set-default)
+			SET_DEFAULT=true
+			shift
+			;;
+		--*|++*)
+			# FILTER OUT UNRECOGNIZED LONG-FORMAT OPTIONS
+			echo "Unknown long format option: $key"
+			shift
+			;;
+		-*|+*)
+			# FILTER OUT FLAGS AND FLAG CHAINS
+			deserialize_flags $key
+			shift
+			;;
+		*/*)
+			# FILTER OUT CUSTOM OPERAND (any path-like value without further examining in this example)
+			OPERAND_D=$1
+			shift
+			;;
+		*)
+			# FILTER OUT THE REST FOR POST EVALUATION
+			POSITIONAL+=("$1")
+			shift
+			;;
+	esac
 done
 
 # Needs setup: Here you can define custom post evaluation checks (if needed):
 if [[ ${#POSITIONAL} -gt 0 ]]; then
-        for arg in ${POSITIONAL[@]}
-        do
-                echo "Unrecognized operand $arg"
-        done
+	for arg in ${POSITIONAL[@]}
+	do
+		echo "Unrecognized operand $arg"
+	done
 fi
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
@@ -269,39 +273,47 @@ if [[ $RES_DEFAULT == true ]];then restore_default;fi
 if [[ -z "${TMP// }" ]];then TMP_FOLDER="${FOLDER}TMP/$PROJECT/";else TMP_FOLDER="$TMP/$PROJECT/";fi
 
 clear_temp () {
-        case $1 in
-                -p|--project)   rm -r $TMP_FOLDER ;;
-                -s|--script)    rm -r $TMP_FOLDER$FILE_NAME.d/ ;;
-                -f|--file)              rm $TMP_FOLDER$FILE_NAME.d/$2.tmp ;;
-                *)
-                        echo "Cleaning temp file(s) failed. Use:"
-                        echo "-p|--project              - Delete all project related temp files.        ( Folder: $TMP_FOLDER )"
-                        echo "-s|--script               - Delete only script related temp files.        ( Folder: $TMP_FOLDER$FILE_NAME.d/ )"
-                        echo "-f|--file <file_name>     - Delete only single temp file.         ( Folder: $TMP_FOLDER$FILE_NAME.d/<file_name>.tmp"
-                ;;
-        esac
+	case $1 in
+		-p|--project) rm -r $TMP_FOLDER ;;
+		-s|--script) rm -r $TMP_FOLDER$FILE_NAME.d/ ;;
+		-f|--file) rm $TMP_FOLDER$FILE_NAME.d/$2.tmp ;;
+		*)
+			echo "Cleaning temp file(s) failed. Use:"
+			echo "-p|--project				- Delete all project related temp files.		( Folder: $TMP_FOLDER )"
+			echo "-s|--script				- Delete only script related temp files.		( Folder: $TMP_FOLDER$FILE_NAME.d/ )"
+			echo "-f|--file <file_name>		- Delete only single temp file.					( Folder: $TMP_FOLDER$FILE_NAME.d/<file_name>.tmp"
+			;;
+	esac
 }
 
 add_temp () {
-        case $1 in
-                -p|--project)   if [[ ! -d $TMP_FOLDER ]];then mkdir -p $TMP_FOLDER;fi; echo $3 >> $TMP_FOLDER$2.tmp ;;
-                -s|--script)    if [[ ! -d $TMP_FOLDER$FILE_NAME.d/ ]];then mkdir -p $TMP_FOLDER$FILE_NAME.d/;fi; echo $3 >> $TMP_FOLDER$FILE_NAME.d/$2.tmp ;;
-                *)
-                        echo "Creating temp file(s) failed. Use:"
-                        echo "-p|--project <file_name> <content>        - Create temp file file_name (if not exists) in project temp folder and append content to it.   ( File: ${TMP_FOLDER}file_name )"
-                        echo "-s|--script  <file_name> <content>        - Create temp file file_name (if not exists) in script temp folder and append content to it.    ( File: $TMP_FOLDER$FILE_NAME.d/file_name )"
-                ;;
-        esac
+	case $1 in
+		-p|--project)	if [[ ! -d $TMP_FOLDER ]];then
+							mkdir -p $TMP_FOLDER
+						fi
+						echo $3 >> $TMP_FOLDER$2.tmp
+						;;
+		-s|--script)	if [[ ! -d $TMP_FOLDER$FILE_NAME.d/ ]];then
+							mkdir -p $TMP_FOLDER$FILE_NAME.d/
+						fi
+						echo $3 >> $TMP_FOLDER$FILE_NAME.d/$2.tmp
+						;;
+		*)
+			echo "Creating temp file(s) failed. Use:"
+			echo "-p|--project <file_name> <content>        - Create temp file file_name (if not exists) in project temp folder and append content to it.   ( File: ${TMP_FOLDER}file_name )"
+			echo "-s|--script  <file_name> <content>        - Create temp file file_name (if not exists) in script temp folder and append content to it.    ( File: $TMP_FOLDER$FILE_NAME.d/file_name )"
+			;;
+	esac
 }
 
 ##### ERROR LOGGING #####
 
 readonly LOG_FILE="$FOLDER$FILE_NAME.log"
 
-info ()         { echo -e "$(date) -> [INFO]     $0     $1" | tee -a "$LOG_FILE" >&2 ; }
-warning ()      { echo -e "$(date) -> [WARN]     $0     $1" | tee -a "$LOG_FILE" >&2 ; }
-error()         { echo -e "$(date) -> [ERROR] $0        $1" | tee -a "$LOG_FILE" >&2 ; }
-fatal()         { echo -e "$(date) -> [FATAL] $0        $1" | tee -a "$LOG_FILE" >&2 ; exit 1 ; }
+info ()		{ echo -e "$(date) -> [INFO]	$0		$1" | tee -a "$LOG_FILE" >&2 ; }
+warning ()	{ echo -e "$(date) -> [WARN]	$0		$1" | tee -a "$LOG_FILE" >&2 ; }
+error()		{ echo -e "$(date) -> [ERROR]	$0		$1" | tee -a "$LOG_FILE" >&2 ; }
+fatal()		{ echo -e "$(date) -> [FATAL]	$0		$1" | tee -a "$LOG_FILE" >&2 ; exit 1 ; }
 
 ##### SCRIPT FUNCTIONS #####
 
@@ -318,14 +330,14 @@ fatal()         { echo -e "$(date) -> [FATAL] $0        $1" | tee -a "$LOG_FILE"
 ##### CLEAN UP #####
 
 function clean_up {
-        echo -e "\nCleaning up..."
+	echo -e "\nCleaning up..."
 
-        # uncomment what suits the most:
-        # clear_temp -p # project scope
-        # clear_temp -s # script scope
-        # clear_temp -f <replace_with_file_name> # single file scope
+	# uncomment what suits the most:
+	# clear_temp -p # project scope
+	# clear_temp -s # script scope
+	# clear_temp -f <replace_with_file_name> # single file scope
 
-        # Other clean up stuff goes here:
+	# Other clean up stuff goes here:
 
 }
 trap clean_up EXIT
