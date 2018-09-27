@@ -284,11 +284,13 @@ add_temp () {
 	case $1 in
 		-p|--project)	if [[ ! -d $TMP_FOLDER ]];then
 					mkdir -p $TMP_FOLDER
+					echo $3 >> $TMP_FOLDER$2.tmp
 				fi
 				echo $3 >> $TMP_FOLDER$2.tmp
 				;;
 		-s|--script)	if [[ ! -d $TMP_FOLDER$FILE_NAME.d/ ]];then
 					mkdir -p $TMP_FOLDER$FILE_NAME.d/
+					echo $3 >> $TMP_FOLDER$FILE_NAME.d/$2.tmp
 				fi
 					echo $3 >> $TMP_FOLDER$FILE_NAME.d/$2.tmp
 				;;
