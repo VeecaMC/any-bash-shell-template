@@ -110,10 +110,10 @@ SET_DEFAULT=false
 #  allow these functions to take effect upon the variable.
 
 #->DEFAULTS
-FLAG_A=true
-FLAG_B=true
-OPTION_ARG_C="option"
-OPERAND_D="/home/Petr.Vecko/Documentspath/"
+FLAG_A=false
+FLAG_B=false
+declare OPTION_ARG_C
+declare OPERAND_D
 #->DEFAULTS
 DEFAULTS_START=$(($(grep -n "#->DEFAULTS" $0 | head -n 1 | cut -d: -f1)+6))
 DEFAULTS_END=$(($(grep -n "#->DEFAULTS" $0 | tail -n 1 | cut -d: -f1)-3))
@@ -132,14 +132,14 @@ set_default () {
 	sed -i "$DEFAULTS_START,$DEFAULTS_END s/FLAG_B=.*/FLAG_B=$FLAG_B/" $0
 
 	# Variables
-	if [[ -z "${OPTION_ARG_C}" ]];then
+	if [[ -z "${OPTION_ARG_C// }" ]];then
 		sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPTION_ARG_C.*/declare OPTION_ARG_C/" $0;
 	else
 		sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPTION_ARG_C.*/OPTION_ARG_C=\"$OPTION_ARG_C\"/" $0
 	fi
 
 	if [[ -z "${OPERAND_D}" ]];then
-		sed -i '$DEFAULTS_START,$DEFAULTS_END s/.*OPERAND_D.*/declare OPERAND_D/' $0;
+		sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPERAND_D.*/declare OPERAND_D/" $0;
 	else
 		OPERAND_D="${OPERAND_D//\//\\/}"
 		sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPERAND_D.*/OPERAND_D=\"$OPERAND_D\"/" $0
@@ -168,7 +168,9 @@ function interpret_-flag () {
 	case $1 in
 		a)  FLAG_A=true;;
 		b)  FLAG_B=true; set -e;;
-		-)  # Do nothing;;
+		-)  
+			# Do nothing
+			;;
 		*)  echo "Unknown - flag $1";;
 	esac
 }
@@ -177,7 +179,9 @@ function interpret_-flag () {
 function interpret_+flag () {
 	case $1 in
 		b)  FLAG_B=true; set +e;;
-		+)  # Do nothing;;
+		+)  
+			# Do nothing
+			;;
 		*)  echo "Unknown + flag $1";;
 	esac
 }
