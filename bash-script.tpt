@@ -124,14 +124,13 @@ print_default () {
 }
 # print_default
 
+# Needs setup: Each time you add a parameter to the list, you need to register it accordingly here:
 set_default () {
-	# Needs setup: Each time you add a parameter to the list, you need to register it accordingly here:
-
-	# Flags (OR: other custom types that do not get unset by design)
+	# Flags (OR: other custom types that do not get unset by design):
 	sed -i "$DEFAULTS_START,$DEFAULTS_END s/FLAG_A=.*/FLAG_A=$FLAG_A/" $0
 	sed -i "$DEFAULTS_START,$DEFAULTS_END s/FLAG_B=.*/FLAG_B=$FLAG_B/" $0
 
-	# Variables
+	# Other variables:
 	if [[ -z "${OPTION_ARG_C// }" ]];then
 		sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPTION_ARG_C.*/declare OPTION_ARG_C/" $0;
 	else
@@ -144,22 +143,17 @@ set_default () {
 		OPERAND_D="${OPERAND_D//\//\\/}"
 		sed -i "$DEFAULTS_START,$DEFAULTS_END s/.*OPERAND_D.*/OPERAND_D=\"$OPERAND_D\"/" $0
 	fi
-
-	echo "Default settings saved!"
 }
 # set_default
 
+# Needs setup: Each time you add a parameter to the list, you should set its intended default value here:
 restore_default () {
-	# Needs setup: Each time you add a parameter to the list, you should set its intended default value here:
 	FLAG_A=false
 	FLAG_B=false
-
 	unset OPTION_ARG_C
-
 	unset OPERAND_D
 
 	set_default
-	echo "Default setting restored!"
 }
 # restore_default
 
