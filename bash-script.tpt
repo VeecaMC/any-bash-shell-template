@@ -270,7 +270,7 @@ clear_temp () {
 	case $1 in
 		-p|--project) 	rm -r $TMP_FOLDER ;;
 		-s|--script) 	rm -r $TMP_FOLDER$FILE_NAME.d/ ;;
-		-f|--file) 	rm $TMP_FOLDER$FILE_NAME.d/$2.tmp ;;
+		-f|--file) 		rm $TMP_FOLDER$FILE_NAME.d/$2.tmp ;;
 		*)		
 				echo "Cleaning temp file(s) failed. Use:"
 				echo "-p|--project				- Delete all project related temp files.	( Folder: $TMP_FOLDER )"
@@ -283,17 +283,15 @@ clear_temp () {
 add_temp () {
 	case $1 in
 		-p|--project)	if [[ ! -d $TMP_FOLDER ]];then
-					mkdir -p $TMP_FOLDER
-					echo $3 >> $TMP_FOLDER$2.tmp
-				fi
-				echo $3 >> $TMP_FOLDER$2.tmp
-				;;
+							mkdir -p $TMP_FOLDER
+						fi
+						echo $3 >> $TMP_FOLDER$2.tmp
+						;;
 		-s|--script)	if [[ ! -d $TMP_FOLDER$FILE_NAME.d/ ]];then
-					mkdir -p $TMP_FOLDER$FILE_NAME.d/
-					echo $3 >> $TMP_FOLDER$FILE_NAME.d/$2.tmp
-				fi
-					echo $3 >> $TMP_FOLDER$FILE_NAME.d/$2.tmp
-				;;
+							mkdir -p $TMP_FOLDER$FILE_NAME.d/
+						fi
+						echo $3 >> $TMP_FOLDER$FILE_NAME.d/$2.tmp
+						;;
 		*)
 				echo "Creating temp file(s) failed. Use:"
 				echo "-p|--project <file_name> <content>        - Create temp file file_name (if not exists) in project temp folder and append content to it.   ( File: ${TMP_FOLDER}file_name )"
