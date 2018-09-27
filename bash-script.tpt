@@ -264,7 +264,19 @@ if [[ $RES_DEFAULT == true ]];then restore_default;fi
 
 ##### TEMP FILES #####
 
-if [[ -z "${TMP// }" ]];then TMP_FOLDER="${FOLDER}TMP/$PROJECT/";else TMP_FOLDER="$TMP/$PROJECT/";fi
+if [[ ! -z "${TMPDIR// }" ]];then
+	TMP_FOLDER="$TMPDIR/$PROJECT/"
+else
+	if [[ ! -z "${TMP// }" ]];then
+		TMP_FOLDER="$TMP/$PROJECT/"
+	else
+		if [[ ! -z "${TEMP// }" ]];then
+			TMP_FOLDER="$TEMP/$PROJECT/"
+		else 
+			TMP_FOLDER="${FOLDER}TMP/$PROJECT/"
+		fi
+	fi
+fi
 
 clear_temp () {
 	case $1 in
