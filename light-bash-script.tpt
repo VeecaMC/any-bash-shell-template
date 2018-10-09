@@ -280,25 +280,31 @@ if [[ $PRINT_USED == true ]];then print_used;fi
 
 ##### TEMP FILES #####
 
-if [[ ! -z "${TMPDIR// }" ]];then
-	TMP_FOLDER="$TMPDIR/$PROJECT/"
-else
-	if [[ ! -z "${TMP// }" ]];then
-		TMP_FOLDER="$TMP/$PROJECT/"
+prepare_temp () {
+
+	echo "preparing temp folder"
+	if [[ ! -z "${TMPDIR// }" ]];then
+		TMP_FOLDER="$TMPDIR/$PROJECT/" 
 	else
-		if [[ ! -z "${TEMP// }" ]];then
-			TMP_FOLDER="$TEMP/$PROJECT/"
-		else 
-			TMP_FOLDER="${FOLDER}TMP/$PROJECT/"
+		if [[ ! -z "${TMP// }" ]];then
+			TMP_FOLDER="$TMP/$PROJECT/"
+		else
+			if [[ ! -z "${TEMP// }" ]];then
+				TMP_FOLDER="$TEMP/$PROJECT/"
+			else
+				TMP_FOLDER="${FOLDER}TMP/$PROJECT/"
+			fi
 		fi
 	fi
-fi
+
+	mkdir -p $TMP_FOLDER
+}
 
 clear_temp () {
 	case $1 in
 		-p|--project) 	rm -r $TMP_FOLDER ;;
 		-s|--script) 	rm -r $TMP_FOLDER$FILE_NAME.d/ ;;
-		-f|--file) 		rm $TMP_FOLDER$FILE_NAME.d/$2.tmp ;;
+		-f|--file) 	rm $TMP_FOLDER$FILE_NAME.d/$2.tmp ;;
 		*)		
 				echo "Cleaning temp file(s) failed. Use:"
 				echo "-p|--project				- Delete all project related temp files.	( Folder: $TMP_FOLDER )"
@@ -309,17 +315,12 @@ clear_temp () {
 }
 
 add_temp () {
+	
+	if [[ ! $TMP_FOLDER ]];then prepare_temp;fi
+	
 	case $1 in
-		-p|--project)	if [[ ! -d $TMP_FOLDER ]];then
-							mkdir -p $TMP_FOLDER
-						fi
-						echo $3 >> $TMP_FOLDER$2.tmp
-						;;
-		-s|--script)	if [[ ! -d $TMP_FOLDER$FILE_NAME.d/ ]];then
-							mkdir -p $TMP_FOLDER$FILE_NAME.d/
-						fi
-						echo $3 >> $TMP_FOLDER$FILE_NAME.d/$2.tmp
-						;;
+		-p|--project)	echo $3 >> $TMP_FOLDER$2.tmp;;
+		-s|--script)	if [[ ! -d $TMP_FOLDER$FILE_NAME.d/ ]];then mkdir $TMP_FOLDER$FILE_NAME.d/;fi && echo $3 >> $TMP_FOLDER$FILE_NAME.d/$2.tmp;;
 		*)
 				echo "Creating temp file(s) failed. Use:"
 				echo "-p|--project <file_name> <content>        - Create temp file file_name (if not exists) in project temp folder and append content to it.   ( File: ${TMP_FOLDER}file_name )"
@@ -343,6 +344,11 @@ fatal()		{ echo -e "$(date) -> [FATAL]	$0	$1" | tee -a "$LOG_FILE" >&2 ; exit 1 
 
 ##### START UP #####
 
+echo "Script is starting up..."
+
+
+add_temp -s temp1 "test temp1"
+add_temp -s temp2 "test temp2"
 
 
 ##### MAIN SCRIPT #####
@@ -350,6 +356,8 @@ fatal()		{ echo -e "$(date) -> [FATAL]	$0	$1" | tee -a "$LOG_FILE" >&2 ; exit 1 
 
 
 ##### CLEAN UP #####
+
+echo "Script has finished..."
 
 function clean_up {
 	echo "Cleaning up..."
