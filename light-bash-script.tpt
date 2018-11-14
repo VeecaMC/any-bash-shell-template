@@ -282,7 +282,7 @@ if [[ $PRINT_USED == true ]];then print_used;fi
 
 prepare_temp () {
 
-	echo "preparing temp folder"
+	echo "Preparing temp folder..."
 	if [[ ! -z "${TMPDIR// }" ]];then
 		TMP_FOLDER="$TMPDIR/$PROJECT/" 
 	else
@@ -346,21 +346,16 @@ fatal()		{ echo -e "$(date) -> [FATAL]	$0	$1" | tee -a "$LOG_FILE" >&2 ; exit 1 
 
 echo "Script is starting up..."
 
-
-add_temp -s temp1 "test temp1"
-add_temp -s temp2 "test temp2"
-
-
 ##### MAIN SCRIPT #####
 
 
 
 ##### CLEAN UP #####
 
-echo "Script has finished..."
+echo "Script is finishing up..."
 
 function clean_up {
-	echo "Cleaning up..."
+	echo "Script is cleaning up..."
 	
 	# uncomment what suits the most:
 	# clear_temp -p # project scope
